@@ -1,0 +1,9 @@
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.chat-area {
+  max-height: 420px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
