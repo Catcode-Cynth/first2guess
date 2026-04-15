@@ -28,6 +28,7 @@ socket.on('gameJoined', (data) => {
   showGameScreen();
 });
 
+// Improved playerUpdate - Better start button control
 socket.on('playerUpdate', (players) => {
   const container = document.getElementById('players-list');
   container.innerHTML = players.map(p => `
@@ -43,8 +44,13 @@ socket.on('playerUpdate', (players) => {
   const amIMaster = players.some(p => p.id === mySocketId && p.isMaster === true);
   isGameMaster = amIMaster;
 
+  const startBtn = document.getElementById('start-btn');
+
   if (isGameMaster) {
-    document.getElementById('start-btn').classList.remove('hidden');
+    startBtn.classList.remove('hidden');
+    startBtn.textContent = "▶️ START GAME ROUND";
+  } else {
+    startBtn.classList.add('hidden');
   }
 });
 
@@ -52,6 +58,14 @@ function showGameScreen() {
   document.getElementById('lobby').classList.add('hidden');
   document.getElementById('game-screen').classList.remove('hidden');
   document.getElementById('game-status').innerHTML = `Code: <span class="text-pink-400">${currentGameCode}</span>`;
+  
+  // Reset start button visibility
+  const startBtn = document.getElementById('start-btn');
+  if (isGameMaster) {
+    startBtn.classList.remove('hidden');
+  } else {
+    startBtn.classList.add('hidden');
+  }
 }
 
 function startGame() {
