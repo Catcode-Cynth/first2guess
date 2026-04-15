@@ -14,7 +14,7 @@ app.use(express.static(path.join(__dirname, '../client')));
 
 let games = {};
 
-// ✅ NORMALIZE FUNCTION (FIXES YOUR MAIN BUG)
+// ✅ NORMALIZE FUNCTION 
 function normalize(text) {
   return text.toLowerCase().replace(/[^a-z0-9]/g, '').trim();
 }

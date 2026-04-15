@@ -1,4 +1,4 @@
-const socket = io('http://localhost:3000');
+const socket = io();
 
 let currentGameCode = null;
 let isGameMaster = false;
