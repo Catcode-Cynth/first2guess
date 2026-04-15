@@ -3,17 +3,41 @@ const socket = io();
 let currentGameCode = null;
 let isGameMaster = false;
 let mySocketId = null;
+let myUsername = "";
 
 socket.on('connect', () => {
   mySocketId = socket.id;
 });
 
-function createGame() { socket.emit('createGame'); }
+// Get username with validation
+function getUsername() {
+  const usernameInput = document.getElementById('username').value.trim();
+  if (!usernameInput) {
+    alert("Please enter your name before playing!");
+    return null;
+  }
+  return usernameInput;
+}
+
+function createGame() {
+  const username = getUsername();
+  if (!username) return;
+  
+  myUsername = username;
+  socket.emit('createGame', { username });
+}
 
 function joinGame() {
+  const username = getUsername();
+  if (!username) return;
+  
   const code = document.getElementById('joinCode').value.trim();
-  if (code.length === 6) socket.emit('joinGame', code);
-  else alert("Please enter a valid 6-digit code");
+  if (code.length === 6) {
+    myUsername = username;
+    socket.emit('joinGame', { gameCode: code, username });
+  } else {
+    alert("Please enter a valid 6-digit code");
+  }
 }
 
 socket.on('gameCreated', (data) => {
@@ -28,7 +52,6 @@ socket.on('gameJoined', (data) => {
   showGameScreen();
 });
 
-// Improved playerUpdate - Better start button control
 socket.on('playerUpdate', (players) => {
   const container = document.getElementById('players-list');
   container.innerHTML = players.map(p => `
@@ -45,7 +68,6 @@ socket.on('playerUpdate', (players) => {
   isGameMaster = amIMaster;
 
   const startBtn = document.getElementById('start-btn');
-
   if (isGameMaster) {
     startBtn.classList.remove('hidden');
     startBtn.textContent = "▶️ START GAME ROUND";
@@ -59,7 +81,6 @@ function showGameScreen() {
   document.getElementById('game-screen').classList.remove('hidden');
   document.getElementById('game-status').innerHTML = `Code: <span class="text-pink-400">${currentGameCode}</span>`;
   
-  // Reset start button visibility
   const startBtn = document.getElementById('start-btn');
   if (isGameMaster) {
     startBtn.classList.remove('hidden');
@@ -72,7 +93,9 @@ function startGame() {
   if (isGameMaster) document.getElementById('question-modal').classList.remove('hidden');
 }
 
-function cancelModal() { document.getElementById('question-modal').classList.add('hidden'); }
+function cancelModal() { 
+  document.getElementById('question-modal').classList.add('hidden'); 
+}
 
 function submitQuestion() {
   const question = document.getElementById('modal-question').value.trim();
@@ -84,17 +107,37 @@ function submitQuestion() {
   } else {
     alert("Both fields are required!");
   }
-}
+};
 
-// Round Started
+// ==================== STRONG MOBILE-FRIENDLY ROUND STARTED ====================
 socket.on('roundStarted', (data) => {
-  document.getElementById('main-content').innerHTML = `
-    <div class="text-center max-w-md mx-auto">
+  console.log("📱 Round started - Question received:", data.question);
+
+  const mainContent = document.getElementById('main-content');
+  const guessArea = document.getElementById('guess-area');
+  const chatArea = document.getElementById('chat-area');
+
+  if (!mainContent) return;
+
+  // Clear and set new content
+  mainContent.innerHTML = `
+    <div class="text-center max-w-md mx-auto px-4 py-8">
       <p class="text-pink-400 uppercase tracking-widest text-sm mb-4">GUESS THE SECRET</p>
-      <p class="text-2xl font-medium">${data.question}</p>
+      <p class="text-xl sm:text-2xl font-medium leading-relaxed break-words">${data.question}</p>
     </div>`;
-  document.getElementById('guess-area').classList.remove('hidden');
-  document.getElementById('chat-area').innerHTML = ''; 
+
+  if (guessArea) guessArea.classList.remove('hidden');
+  if (chatArea) chatArea.innerHTML = '';
+
+  // Multiple forces for stubborn mobile browsers
+  setTimeout(() => {
+    mainContent.offsetHeight;           // Force reflow
+    mainContent.style.opacity = '0.99';
+    
+    setTimeout(() => {
+      mainContent.style.opacity = '1';
+    }, 30);
+  }, 100);
 });
 
 // Timer
@@ -166,12 +209,9 @@ function submitGuess() {
   }
 }
 
-// ======================
-//  ENTER TO GUESS
-// ======================
+// Enter to Guess
 document.addEventListener('DOMContentLoaded', () => {
   const guessInput = document.getElementById('guess-input');
-  
   if (guessInput) {
     guessInput.addEventListener('keypress', function(e) {
       if (e.key === 'Enter') {

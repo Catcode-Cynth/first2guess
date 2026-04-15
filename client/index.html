@@ -24,43 +24,49 @@
         Connected
       </div>
     </div>
+<!-- LOBBY -->
+<div id="lobby" class="bg-zinc-900 rounded-3xl p-8 sm:p-12 lg:p-16">
+  <div class="text-center mb-12">
+    <h2 class="text-3xl sm:text-4xl font-bold mb-3">Guess the Secret</h2>
+    <p class="text-zinc-400 text-base sm:text-lg">Riddles • Phrases • Emojis • Songs • Celebrities</p>
+  </div>
 
-    <!-- LOBBY -->
-    <div id="lobby" class="bg-zinc-900 rounded-3xl p-8 sm:p-12 lg:p-16">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl sm:text-4xl font-bold mb-3">Guess the Secret</h2>
-        <p class="text-zinc-400 text-base sm:text-lg">Riddles • Phrases • Emojis • Songs • Celebrities</p>
-      </div>
+  <!-- Username Input -->
+  <div class="max-w-md mx-auto mb-10">
+    <label class="block text-sm text-zinc-400 mb-2 text-center">Your Name</label>
+    <input id="username" type="text" placeholder="Enter your name" 
+           class="w-full text-center bg-zinc-800 border border-zinc-700 focus:border-pink-500 rounded-2xl py-4 text-lg focus:outline-none">
+  </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10 max-w-2xl mx-auto">
-        
-        <!-- Be Game Master -->
-        <div onclick="createGame()" 
-             class="cursor-pointer bg-gradient-to-br from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 p-8 sm:p-12 rounded-3xl text-center transition-all duration-300 hover:scale-105 border-2 border-purple-400/50 hover:border-purple-400 h-full flex flex-col justify-center">
-          <div class="text-6xl sm:text-7xl mb-6">👑</div>
-          <h3 class="text-2xl sm:text-3xl font-bold mb-8">Be Game Master</h3>
-          <div class="mt-auto border-2 border-white/70 bg-black hover:bg-zinc-900 transition-all py-4 px-8 rounded-2xl text-white font-semibold text-lg mx-4 sm:mx-6">
-            Create a New Session
-          </div>
-        </div>
-
-        <!-- Join Session -->
-        <div class="bg-zinc-800 p-8 sm:p-12 rounded-3xl border-2 border-zinc-700 hover:border-zinc-500 transition-all h-full flex flex-col justify-center">
-          <div class="flex-1 flex items-center justify-center mb-8">
-            <div class="text-6xl sm:text-7xl">🔑</div>
-          </div>
-          <h3 class="text-2xl sm:text-3xl font-bold text-center mb-8">Join Session</h3>
-          
-          <input id="joinCode" type="text" maxlength="6" placeholder="000000"
-                 class="w-full text-center text-4xl tracking-widest bg-zinc-900 py-6 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 mb-10 font-mono">
-          
-          <button onclick="joinGame()" 
-                  class="w-full sm:w-2/3 mx-auto block bg-white text-zinc-900 py-4 rounded-2xl font-bold text-lg hover:bg-zinc-100 transition">
-            JOIN SESSION
-          </button>
-        </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10 max-w-2xl mx-auto">
+    
+    <!-- Be Game Master -->
+    <div onclick="createGame()" 
+         class="cursor-pointer bg-gradient-to-br from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 p-8 sm:p-12 rounded-3xl text-center transition-all duration-300 hover:scale-105 border-2 border-purple-400/50 hover:border-purple-400 h-full flex flex-col justify-center">
+      <div class="text-6xl sm:text-7xl mb-6">👑</div>
+      <h3 class="text-2xl sm:text-3xl font-bold mb-8">Be Game Master</h3>
+      <div class="mt-auto border-2 border-white/70 bg-black hover:bg-zinc-900 transition-all py-4 px-8 rounded-2xl text-white font-semibold text-lg mx-4 sm:mx-6">
+        Create a New Session
       </div>
     </div>
+
+    <!-- Join Session -->
+    <div class="bg-zinc-800 p-8 sm:p-12 rounded-3xl border-2 border-zinc-700 hover:border-zinc-500 transition-all h-full flex flex-col justify-center">
+      <div class="flex-1 flex items-center justify-center mb-8">
+        <div class="text-6xl sm:text-7xl">🔑</div>
+      </div>
+      <h3 class="text-2xl sm:text-3xl font-bold text-center mb-8">Join Session</h3>
+      
+      <input id="joinCode" type="text" maxlength="6" placeholder="000000"
+             class="w-full text-center text-4xl tracking-widest bg-zinc-900 py-6 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 mb-8 font-mono">
+      
+      <button onclick="joinGame()" 
+              class="w-full sm:w-2/3 mx-auto block bg-white text-zinc-900 py-4 rounded-2xl font-bold text-lg hover:bg-zinc-100 transition">
+        JOIN SESSION
+      </button>
+    </div>
+  </div>
+</div>
 
     <!-- GAME SCREEN -->
     <div id="game-screen" class="hidden bg-zinc-900 rounded-3xl overflow-hidden min-h-[85vh] sm:h-[680px] flex flex-col md:flex-row mt-8">

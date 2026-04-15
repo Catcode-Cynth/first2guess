@@ -22,7 +22,8 @@ function normalize(text) {
 io.on('connection', (socket) => {
   console.log('Player connected:', socket.id);
 
-  socket.on('createGame', () => {
+  // Updated createGame with username
+  socket.on('createGame', ({ username }) => {
     const gameCode = Math.floor(100000 + Math.random() * 900000).toString();
 
     games[gameCode] = {
@@ -41,7 +42,7 @@ io.on('connection', (socket) => {
 
     games[gameCode].players.push({
       id: socket.id,
-      username: `Player ${games[gameCode].players.length + 1}`,
+      username: username || `Player ${games[gameCode].players.length + 1}`,
       isMaster: true
     });
 
@@ -49,7 +50,8 @@ io.on('connection', (socket) => {
     io.to(gameCode).emit('playerUpdate', games[gameCode].players);
   });
 
-  socket.on('joinGame', (gameCode) => {
+  // Updated joinGame with username
+  socket.on('joinGame', ({ gameCode, username }) => {
     const game = games[gameCode];
 
     if (!game) {
@@ -57,7 +59,7 @@ io.on('connection', (socket) => {
       return;
     }
 
-    // TO PREVENT JOINING DURING ACTIVE GAME
+    // Prevent joining during active game
     if (game.isActive) {
       socket.emit('error', 'Game already in progress');
       return;
@@ -67,7 +69,7 @@ io.on('connection', (socket) => {
 
     game.players.push({
       id: socket.id,
-      username: `Player ${game.players.length + 1}`,
+      username: username || `Player ${game.players.length + 1}`,
       isMaster: false
     });
 
@@ -80,15 +82,11 @@ io.on('connection', (socket) => {
     if (!game || game.gameMaster !== socket.id) return;
 
     game.currentQuestion = question;
-
-    // ✅ STORE RAW ANSWER (we normalize later)
     game.currentAnswer = answer;
-
     game.isActive = true;
     game.attempts = {};
 
     console.log(`Round started for game ${gameCode}`);
-    console.log("ANSWER:", game.currentAnswer);
 
     io.to(gameCode).emit('roundStarted', { question: game.currentQuestion });
 
@@ -102,12 +100,9 @@ io.on('connection', (socket) => {
       if (timeLeft <= 0) {
         clearInterval(game.timer);
 
-        io.to(gameCode).emit('timeUp', {
-          answer: game.currentAnswer
-        });
+        io.to(gameCode).emit('timeUp', { answer: game.currentAnswer });
 
         game.isActive = false;
-
         rotateGameMaster(gameCode);
         resetGame(gameCode);
       }
@@ -131,12 +126,8 @@ io.on('connection', (socket) => {
       attemptsLeft: 3 - game.attempts[socket.id]
     });
 
-    // ✅ NORMALIZED COMPARISON (MAIN FIX)
     const normalizedGuess = normalize(guess);
     const normalizedAnswer = normalize(game.currentAnswer);
-
-    console.log("GUESS:", normalizedGuess);
-    console.log("ANSWER:", normalizedAnswer);
 
     if (normalizedGuess === normalizedAnswer) {
       if (!game.scores[socket.id]) game.scores[socket.id] = 0;
@@ -147,11 +138,10 @@ io.on('connection', (socket) => {
       io.to(gameCode).emit('gameWon', {
         winner: player.username,
         answer: game.currentAnswer,
-        scores: game.scores // ✅ send scores
+        scores: game.scores
       });
 
       game.isActive = false;
-
       rotateGameMaster(gameCode);
       resetGame(gameCode);
     }
@@ -171,7 +161,6 @@ function rotateGameMaster(gameCode) {
   const nextIndex = (currentIndex + 1) % game.players.length;
 
   game.players.forEach(p => p.isMaster = false);
-
   game.players[nextIndex].isMaster = true;
   game.gameMaster = game.players[nextIndex].id;
 

@@ -7,3 +7,35 @@ body {
   overflow-y: auto;
   scroll-behavior: smooth;
 }
+
+/* Mobile Responsiveness & Question Display Fixes */
+#main-content {
+  min-height: 220px;
+  transition: opacity 0.2s ease;
+}
+
+#main-content p {
+  word-break: break-word;
+  hyphens: auto;
+}
+
+/* Better mobile experience */
+@media (max-width: 768px) {
+  #main-content {
+    padding: 2rem 1rem;
+    min-height: 260px;
+  }
+  
+  #game-screen {
+    min-height: 85vh;
+  }
+  
+  .chat-area {
+    max-height: 180px;
+  }
+}
+
+/* Improve button touch targets on mobile */
+button {
+  min-height: 48px;
+}
